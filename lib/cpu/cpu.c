@@ -10,4 +10,5 @@ void init(CPU *cpu, int *memory) {
     cpu->R4 = 0;
     cpu->memory = memory;
     cpu->memroy_size = sizeof(memory);
+    cpu->clock_cycles = 0;
 }
