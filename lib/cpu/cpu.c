@@ -1,6 +1,6 @@
 #include "cpu.h"
 
-void init(CPU *cpu, int *memory) {
+void init(CPU *cpu, unsigned int *memory) {
     cpu->PC = 0;
     cpu->IR = 0;
     cpu->AC = 0;
