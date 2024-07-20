@@ -25,6 +25,17 @@ typedef enum {
     R4
 } Register;
 
+typedef enum {
+    MOV_REG_TO_REG = 0x00,
+    MOV_MEM_TO_REG = 0x01,
+    MOV_REG_TO_MEM = 0x02,
+    AND_GATE = 0x03,
+    OR_GATE = 0x04,
+    XOR_GATE = 0x05,
+    NOT_GATE = 0x06,
+    ADD = 0x07,
+} Opcode;
+
 typedef struct {
     int *registers;     // Registers pointer
     int *memory;        // Memory pointer
@@ -80,6 +91,33 @@ void mov_reg_to_mem(CPU *cpu, size_t address, Register src) {
     memcpy(&cpu->memory[address], &cpu->registers[src], sizeof(int));
 }
 
+void and_gate(CPU *cpu, Register dest, Register src) {
+    cpu->registers[dest] &= cpu->registers[src];
+}
+
+void or_gate(CPU *cpu, Register dest, Register src) {
+    cpu->registers[dest] |= cpu->registers[src];
+}
+void xor_gate(CPU *cpu, Register dest, Register src) {
+    cpu->registers[dest] ^= cpu->registers[src];
+}
+
+void not_gate(CPU *cpu, Register dest, Register src) {
+    cpu->registers[dest] = ~cpu->registers[src];
+}
+
+void add(CPU *cpu, Register dest, Register a, Register b) {
+    int temp = 0;
+
+    while (cpu->registers[b]) {
+        temp = cpu->registers[a];
+        cpu->registers[a] ^= cpu->registers[b];
+        cpu->registers[b] = (temp & cpu->registers[a]) << 1;
+    }
+
+    cpu->registers[dest] = cpu->registers[a];
+}
+
 int main(int argc, char **argv) {
 
     CPU *cpu = init(MEM_SIZE);
@@ -94,6 +132,10 @@ int main(int argc, char **argv) {
     printf("EAX = %d, EBX = %d\n", cpu->registers[EAX], cpu->registers[EBX]);
 
     mov_mem_to_reg(cpu, EAX, 1023);
+    printf("EAX = %d, EBX = %d\n", cpu->registers[EAX], cpu->registers[EBX]);
+
+    or_gate(cpu, EAX, EBX);
+
     printf("EAX = %d, EBX = %d\n", cpu->registers[EAX], cpu->registers[EBX]);
 
     free(cpu->memory);
